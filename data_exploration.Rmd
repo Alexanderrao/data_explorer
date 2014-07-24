@@ -1,0 +1,59 @@
+---
+title: "Data Exploration"
+output:
+  html_document:
+    toc: true
+    theme: united
+---
+
+
+So here I decided to do some anaysis on the number of 
+edits that are done.  I choose to use the dataset 
+from 2014-01-01 because it is in the middle in terms of time 
+for the data that we have. So here we go
+
+
+
+
+```{r}
+library(rjson)
+library(plyr)
+
+n <- 0
+## n <- 100
+if( n == 0){
+    foo <- readLines("2014-01-01.detail.sorted")
+} else {
+    foo <- readLines("2014-01-01.detail.sorted",n=n)
+}
+do.stuff <- function(x){
+    obj <- fromJSON(x)
+    return(obj$object$post_id)
+}
+do.more.stuff <- function(x){
+    obj <- fromJSON(x)
+    return(c(obj$object$post_id,obj$object$content))
+}
+get.content <- function(x){
+    obj <- fromJSON(x)
+    return(obj$object$content)
+}
+
+post.ids <- laply(foo,do.stuff)
+contents <- laply(foo,get.content)
+lots.stuff <- llply(foo,do.more.stuff)
+
+total.stuff <- length(foo)
+num.posts <-length(unique(post.ids))
+num.posts.and.edits <-length(unique(lots.stuff))
+number.edits <- num.posts.and.edits - num.posts
+percent.edited <- number.edits/num.posts
+percent.edited.vs.total <- number.edits/total.stuff
+
+print(number.edits)
+print(percent.edited)
+print(percent.edited.vs.total)
+
+
+```
+
